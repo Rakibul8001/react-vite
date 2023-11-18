@@ -1,18 +1,14 @@
 import React, { Fragment, useEffect, useState } from "react";
-// import '../../Posts.css'
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 import { Button, Form, Modal } from "react-bootstrap";
 import "../../Milestone.css";
 
 const Posts = () => {
-
   const [posts, setPost] = useState([]);
 
-  const initialData = []; // Replace this with your fixed array of 100 data
   const [visibleData, setVisibleData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
   const pageSize = 5; // Set the number of items per page
 
   const [inputData, setInputData] = useState({
@@ -35,10 +31,6 @@ const Posts = () => {
     setPost(newArray); // Update state with the new array
   };
 
-  //   useEffect(() => {
-  //     console.log(posts[0]?.created_at);
-  //   }, [posts]);
-
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -51,27 +43,20 @@ const Posts = () => {
     }));
   };
 
-  //   console.log('inputdata', inputData)
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // setPost([inputData, ...posts]);
     const updatedArray = [inputData, ...posts];
     updateLocalStorage(updatedArray);
     setVisibleData([]);
     setShow(false);
   };
 
-
-
   //infinite scroll
   useEffect(() => {
-    // Simulated initial data fetching (replace with your data fetching logic)
     // This loads the first set of data when the component mounts
     const initialSet = posts.slice(0, pageSize);
-    // setVisibleData(initialSet);
-    setVisibleData(prevData => [...prevData, ...initialSet]);
+    setVisibleData((prevData) => [...prevData, ...initialSet]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts?.length]);
@@ -83,7 +68,7 @@ const Posts = () => {
 
     // Simulated delay for loading more data (replace with your fetching logic)
     setTimeout(() => {
-      setVisibleData(prevData => [...prevData, ...nextSet]);
+      setVisibleData((prevData) => [...prevData, ...nextSet]);
       setIsLoading(false);
     }, 1000); // Simulated delay of 1 second
   };
@@ -91,15 +76,18 @@ const Posts = () => {
   const handleScroll = (event) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
 
-    if (scrollHeight - scrollTop === clientHeight && !isLoading && posts?.length !== visibleData?.length) {
+    if (
+      scrollHeight - scrollTop === clientHeight &&
+      !isLoading &&
+      posts?.length !== visibleData?.length
+    ) {
       // User has reached the bottom and not currently loading more data
       loadNextSet();
     }
   };
 
-  console.log('posts',posts);
-  console.log('visible set',visibleData);
-
+  console.log("posts", posts);
+  console.log("visible set", visibleData);
 
   return (
     <div className="container-fluid p-3">
@@ -122,7 +110,12 @@ const Posts = () => {
         </div>
       </div>
 
-      <div id="milestone-container" className="container" style={{ height: '500px', overflowY: 'scroll' }} onScroll={handleScroll}>
+      <div
+        id="milestone-container"
+        className="container"
+        style={{ height: "500px", overflowY: "scroll" }}
+        onScroll={handleScroll}
+      >
         <div className="row justify-content-center">
           <div className="col-xl-10 col-12">
             <div className="text-center mb-5">
@@ -173,56 +166,57 @@ const Posts = () => {
             </>
 
             {/* Modal */}
-            {visibleData?.length > 0 ? (<>
-            <div className="timeline timeline-line-solid">
-                {
-                visibleData.map((post, index) => (
-                  <Fragment key={index}>
-                    <div className="timeline-item">
-                      <div className="timeline-point timeline-point" />
-                      <div className="timeline-event">
-                        <div className="widget has-shadow">
-                          <div className="widget-body">
-                            <div className="row">
-                              <div className="col-md-10">
-                                <h5>{post?.title}</h5>
-                                <p className="text-muted">
-                                  {post?.description}
-                                </p>
-                              </div>
-                              <div className="col-md-2 border-left">
-                                <p className="fs-14">{moment(post?.created_at).format("MMM")}</p>
-                                <p className="font-weight-bold">
-                                  <strong>
-                                    {moment(post?.created_at).format("DD")}
-                                  </strong>
-                                </p>
-                                <p className="fs-14">{moment(post?.created_at).format("YYYY")}</p>
+            {visibleData?.length > 0 ? (
+              <>
+                <div className="timeline timeline-line-solid">
+                  {visibleData.map((post, index) => (
+                    <Fragment key={index}>
+                      <div className="timeline-item">
+                        <div className="timeline-point timeline-point" />
+                        <div className="timeline-event">
+                          <div className="widget has-shadow">
+                            <div className="widget-body">
+                              <div className="row">
+                                <div className="col-md-10">
+                                  <h5>{post?.title}</h5>
+                                  <p className="text-muted">
+                                    {post?.description}
+                                  </p>
+                                </div>
+                                <div className="col-md-2 border-left">
+                                  <p className="fs-14">
+                                    {moment(post?.created_at).format("MMM")}
+                                  </p>
+                                  <p className="font-weight-bold">
+                                    <strong>
+                                      {moment(post?.created_at).format("DD")}
+                                    </strong>
+                                  </p>
+                                  <p className="fs-14">
+                                    {moment(post?.created_at).format("YYYY")}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Fragment>
-                ))}
+                    </Fragment>
+                  ))}
 
-              {isLoading &&
-                <span className="timeline-label">
-                  <span className="label bg-primary">Loading......</span>
-                </span>
-              }
-              
-            
-            </div>
-           </> ):(
-            <div className="text-center">No Posts are available !</div>
-           )}
-
+                  {isLoading && (
+                    <span className="timeline-label">
+                      <span className="label bg-primary">Loading......</span>
+                    </span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="text-center">No Posts are available !</div>
+            )}
           </div>
         </div>
       </div>
-
     </div>
   );
 };
