@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
+import { Fragment, useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import "../../Milestone.css";
 
@@ -19,7 +19,7 @@ const Posts = () => {
 
   useEffect(() => {
     // Get data from localStorage when the component mounts
-    const storedData = localStorage.getItem("myData");
+    const storedData = localStorage.getItem("localData");
     if (storedData) {
       setPost(JSON.parse(storedData)); // Convert the stored JSON string back to an array
     }
@@ -27,7 +27,7 @@ const Posts = () => {
 
   const updateLocalStorage = (newArray) => {
     // Save the updated array to localStorage
-    localStorage.setItem("myData", JSON.stringify(newArray)); // Convert the array to JSON string
+    localStorage.setItem("localData", JSON.stringify(newArray)); // Convert the array to JSON string
     setPost(newArray); // Update state with the new array
   };
 
@@ -61,6 +61,7 @@ const Posts = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts?.length]);
 
+  //load next data
   const loadNextSet = () => {
     setIsLoading(true);
     const currentLength = visibleData.length;
@@ -94,20 +95,17 @@ const Posts = () => {
       <div className="flex-container">
         <div className="flex-item">
           <p className="font-weight-bold">Timeline</p>
-          {/* <a href="#" className="fs-12">
-            Pages/timeline
-          </a> */}
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item">
-              <a href="">Pages</a>
-            </li>
-            <li className="breadcrumb-item active" aria-current="page">
-              Timeline
-            </li>
-          </ol>
-        </nav>
-        
+
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="">Pages</a>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                Timeline
+              </li>
+            </ol>
+          </nav>
         </div>
         <div className="flex-item">
           <Button
@@ -134,49 +132,47 @@ const Posts = () => {
               <p className="fs-12">WOW !! WHAT A JOURNEY SO FAR !!</p>
             </div>
             {/* Modal */}
-            <>
-              {/* The Modal */}
-              <Modal dialogClassName="" show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                  <Modal.Title>New Post</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formBasicName" className="mb-3">
-                      <Form.Label>Title</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter title"
-                        name="title"
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="formBasicName" className="mb-3">
-                      <Form.Label>Description</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={5}
-                        placeholder="Enter Description"
-                        name="description"
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
+            <Modal dialogClassName="" show={show} onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>New Post</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group controlId="formBasicName" className="mb-3">
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter title"
+                      name="title"
+                      onChange={handleChange}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formBasicName" className="mb-3">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={5}
+                      placeholder="Enter Description"
+                      name="description"
+                      onChange={handleChange}
+                      required
+                    />
+                  </Form.Group>
 
-                    <Button
-                      variant="primary"
-                      className="shadow rounded"
-                      type="submit"
-                    >
-                      Save
-                    </Button>
-                  </Form>
-                </Modal.Body>
-              </Modal>
-            </>
+                  <Button
+                    variant="primary"
+                    className="shadow rounded"
+                    type="submit"
+                  >
+                    Save
+                  </Button>
+                </Form>
+              </Modal.Body>
+            </Modal>
 
             {/* Modal */}
+
             {visibleData?.length > 0 ? (
               <>
                 <div className="timeline timeline-line-solid">
@@ -188,24 +184,28 @@ const Posts = () => {
                           <div className="widget has-shadow">
                             <div className="widget-body">
                               <div className="row">
-                                <div className="col-md-10">
-                                  <h5>{post?.title}</h5>
-                                  <p className="text-muted">
+                                <div className="col-md-10 ">
+                                  <h5 className="text-truncate">
+                                    {post?.title}
+                                  </h5>
+                                  <p className="text-muted truncate-text">
                                     {post?.description}
                                   </p>
                                 </div>
                                 <div className="col-md-2 border-left">
-                                  <p className="fs-14">
-                                    {moment(post?.created_at).format("MMM")}
-                                  </p>
-                                  <p className="font-weight-bold">
-                                    <strong>
-                                      {moment(post?.created_at).format("DD")}
-                                    </strong>
-                                  </p>
-                                  <p className="fs-14">
-                                    {moment(post?.created_at).format("YYYY")}
-                                  </p>
+                                  <div className="p-2">
+                                    <p className="fs-14">
+                                      {moment(post?.created_at).format("MMM")}
+                                    </p>
+                                    <p className="font-weight-bold">
+                                      <strong>
+                                        {moment(post?.created_at).format("DD")}
+                                      </strong>
+                                    </p>
+                                    <p className="fs-14">
+                                      {moment(post?.created_at).format("YYYY")}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
                             </div>

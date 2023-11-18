@@ -591,6 +591,17 @@ body {
     display: flex;
     justify-content: space-between; /* Add space between items */
   }
+
 a{
   text-decoration: none;
+}
+
+.truncate-text {
+  max-width: 100%; /* Set a maximum width if needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limit number of lines */
+  -webkit-box-orient: vertical;
+  max-height: 3 * 1.2em; /* Adjust based on the line height */
 }
