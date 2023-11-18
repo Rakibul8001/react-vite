@@ -6,24 +6,14 @@ import { Button, Form, Modal } from "react-bootstrap";
 import "../../Milestone.css";
 
 const Posts = () => {
-  //   const [posts, setPost] = useState([
-  //     {
-  //       title: "John",
-  //       description: "lorem ipsum dolor sit amet, consectetur adipiscing",
-  //       created_at: new Date(),
-  //     },
-  //     {
-  //       title: "Alice",
-  //       description: "lorem ipsum dolor sit amet, consectetur adipiscing",
-  //       created_at: new Date(),
-  //     },
-  //     {
-  //       title: "Alice",
-  //       description: "lorem ipsum dolor sit amet, consectetur adipiscing",
-  //       created_at: new Date(),
-  //     },
-  //   ]);
+
   const [posts, setPost] = useState([]);
+
+  const initialData = []; // Replace this with your fixed array of 100 data
+  const [visibleData, setVisibleData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 5; // Set the number of items per page
 
   const [inputData, setInputData] = useState({
     title: "",
@@ -37,7 +27,7 @@ const Posts = () => {
     if (storedData) {
       setPost(JSON.parse(storedData)); // Convert the stored JSON string back to an array
     }
-  }, []);
+  }, [posts?.length]);
 
   const updateLocalStorage = (newArray) => {
     // Save the updated array to localStorage
@@ -69,10 +59,47 @@ const Posts = () => {
     // setPost([inputData, ...posts]);
     const updatedArray = [inputData, ...posts];
     updateLocalStorage(updatedArray);
+    setVisibleData([]);
     setShow(false);
   };
 
-  console.log("postsdata", posts);
+
+
+  //infinite scroll
+  useEffect(() => {
+    // Simulated initial data fetching (replace with your data fetching logic)
+    // This loads the first set of data when the component mounts
+    const initialSet = posts.slice(0, pageSize);
+    // setVisibleData(initialSet);
+    setVisibleData(prevData => [...prevData, ...initialSet]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts?.length]);
+
+  const loadNextSet = () => {
+    setIsLoading(true);
+    const currentLength = visibleData.length;
+    const nextSet = posts.slice(currentLength, currentLength + pageSize);
+
+    // Simulated delay for loading more data (replace with your fetching logic)
+    setTimeout(() => {
+      setVisibleData(prevData => [...prevData, ...nextSet]);
+      setIsLoading(false);
+    }, 1000); // Simulated delay of 1 second
+  };
+
+  const handleScroll = (event) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+
+    if (scrollHeight - scrollTop === clientHeight && !isLoading && posts?.length !== visibleData?.length) {
+      // User has reached the bottom and not currently loading more data
+      loadNextSet();
+    }
+  };
+
+  console.log('posts',posts);
+  console.log('visible set',visibleData);
+
 
   return (
     <div className="container-fluid p-3">
@@ -85,7 +112,7 @@ const Posts = () => {
         </div>
         <div className="flex-item">
           <Button
-            className="shadow rounded"
+            className="shadow rounded fs-12"
             variant="primary"
             type="button"
             onClick={handleShow}
@@ -95,7 +122,7 @@ const Posts = () => {
         </div>
       </div>
 
-      <div className="container">
+      <div id="milestone-container" className="container" style={{ height: '500px', overflowY: 'scroll' }} onScroll={handleScroll}>
         <div className="row justify-content-center">
           <div className="col-xl-10 col-12">
             <div className="text-center mb-5">
@@ -146,11 +173,10 @@ const Posts = () => {
             </>
 
             {/* Modal */}
+            {visibleData?.length > 0 ? (<>
             <div className="timeline timeline-line-solid">
-              {posts?.length > 0 ? (<>
-              {
-
-                posts.map((post, index) => (
+                {
+                visibleData.map((post, index) => (
                   <Fragment key={index}>
                     <div className="timeline-item">
                       <div className="timeline-point timeline-point" />
@@ -179,19 +205,24 @@ const Posts = () => {
                       </div>
                     </div>
                   </Fragment>
-                ))
+                ))}
+
+              {isLoading &&
+                <span className="timeline-label">
+                  <span className="label bg-primary">Loading......</span>
+                </span>
               }
-              </>):(
-                <div className="text-center mb-5">No Posts are available !</div>
-              )}
+              
             
-              <span className="timeline-label">
-                <span className="label bg-primary">Load More</span>
-              </span>
             </div>
+           </> ):(
+            <div className="text-center">No Posts are available !</div>
+           )}
+
           </div>
         </div>
       </div>
+
     </div>
   );
 };

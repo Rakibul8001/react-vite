@@ -8,8 +8,12 @@ import "../../Milestone.css";
 const Posts = () => {
 
   const [posts, setPost] = useState([]);
-  const [items, setItems] = useState([]); // State to hold loaded items
-  const [loading, setLoading] = useState(false);
+
+  const initialData = []; // Replace this with your fixed array of 100 data
+  const [visibleData, setVisibleData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 5; // Set the number of items per page
 
   const [inputData, setInputData] = useState({
     title: "",
@@ -23,7 +27,7 @@ const Posts = () => {
     if (storedData) {
       setPost(JSON.parse(storedData)); // Convert the stored JSON string back to an array
     }
-  }, []);
+  }, [posts?.length]);
 
   const updateLocalStorage = (newArray) => {
     // Save the updated array to localStorage
@@ -55,8 +59,46 @@ const Posts = () => {
     // setPost([inputData, ...posts]);
     const updatedArray = [inputData, ...posts];
     updateLocalStorage(updatedArray);
+    setVisibleData([]);
     setShow(false);
   };
+
+
+
+  //infinite scroll
+  useEffect(() => {
+    // Simulated initial data fetching (replace with your data fetching logic)
+    // This loads the first set of data when the component mounts
+    const initialSet = posts.slice(0, pageSize);
+    // setVisibleData(initialSet);
+    setVisibleData(prevData => [...prevData, ...initialSet]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts?.length]);
+
+  const loadNextSet = () => {
+    setIsLoading(true);
+    const currentLength = visibleData.length;
+    const nextSet = posts.slice(currentLength, currentLength + pageSize);
+
+    // Simulated delay for loading more data (replace with your fetching logic)
+    setTimeout(() => {
+      setVisibleData(prevData => [...prevData, ...nextSet]);
+      setIsLoading(false);
+    }, 1000); // Simulated delay of 1 second
+  };
+
+  const handleScroll = (event) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+
+    if (scrollHeight - scrollTop === clientHeight && !isLoading && posts?.length !== visibleData?.length) {
+      // User has reached the bottom and not currently loading more data
+      loadNextSet();
+    }
+  };
+
+  console.log('posts',posts);
+  console.log('visible set',visibleData);
 
 
   return (
@@ -80,7 +122,7 @@ const Posts = () => {
         </div>
       </div>
 
-      <div className="container">
+      <div id="milestone-container" className="container" style={{ height: '500px', overflowY: 'scroll' }} onScroll={handleScroll}>
         <div className="row justify-content-center">
           <div className="col-xl-10 col-12">
             <div className="text-center mb-5">
@@ -131,10 +173,10 @@ const Posts = () => {
             </>
 
             {/* Modal */}
-            {posts?.length > 0 ? (<>
+            {visibleData?.length > 0 ? (<>
             <div className="timeline timeline-line-solid">
                 {
-                posts.map((post, index) => (
+                visibleData.map((post, index) => (
                   <Fragment key={index}>
                     <div className="timeline-item">
                       <div className="timeline-point timeline-point" />
@@ -164,20 +206,23 @@ const Posts = () => {
                     </div>
                   </Fragment>
                 ))}
+
+              {isLoading &&
+                <span className="timeline-label">
+                  <span className="label bg-primary">Loading......</span>
+                </span>
+              }
+              
             
-              <span className="timeline-label">
-                <span className="label bg-primary">Load More</span>
-              </span>
             </div>
            </> ):(
             <div className="text-center">No Posts are available !</div>
            )}
 
-           {loading && <div className="">Loading...</div>}
-
           </div>
         </div>
       </div>
+
     </div>
   );
 };
