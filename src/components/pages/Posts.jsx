@@ -121,8 +121,7 @@ const Posts = () => {
 
       <div
         id="milestone-container"
-        className="container"
-        style={{ height: "500px", overflowY: "scroll" }}
+        className="container scrollableContainer"
         onScroll={handleScroll}
       >
         <div className="row justify-content-center">
@@ -227,6 +226,7 @@ const Posts = () => {
             )}
           </div>
         </div>
+        
       </div>
     </div>
   );

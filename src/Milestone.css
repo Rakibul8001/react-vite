@@ -605,3 +605,25 @@ a{
   -webkit-box-orient: vertical;
   max-height: 3 * 1.2em; /* Adjust based on the line height */
 }
+
+/* Default styles */
+.scrollableContainer {
+  max-height: 500px; 
+  overflow-y: scroll; 
+}
+
+/* Media query for larger screens */
+@media (min-width: 400px) {
+  .scrollableContainer {
+    max-height: 500px; 
+    overflow-y: scroll; 
+  }
+}
+
+/* Media query for even larger screens (e.g., desktops) */
+@media (min-width: 1200px) {
+  .scrollableContainer {
+    max-height: 700px; 
+    overflow-y: scroll; 
+  }
+}
